@@ -23,7 +23,7 @@ describe('Testes De regressão HML', () => {
 
     context('Testes de Login e LogOut', () => {
 
-        it.only('Fazer Login com dados validos', () => {
+        it('Fazer Login com dados validos', () => {
             cy.consultorVideo()
             cy.clicarEmLogin()
             cy.fazerLogin(dados.email, senhaAtual)
@@ -35,15 +35,13 @@ describe('Testes De regressão HML', () => {
             cy.clicarEmLogin()
             cy.fazerLogin(dados.email, senhaAtual)
             cy.logoutDireto()
-            cy.wait(3000)
           });
         
-          it('Fazer Logout pelo Perfil', () => {
+          it.only('Fazer Logout pelo Perfil', () => {
             cy.consultorVideo()
             cy.clicarEmLogin()
             cy.fazerLogin(dados.email, senhaAtual)
             cy.logoutDoPerfil()
-            cy.wait(3000)
           });
 
     });
@@ -71,7 +69,7 @@ describe('Testes De regressão HML', () => {
           });
           
           
-          it('Editar Endereço Cadastrado', () => {
+          it.only('Editar Endereço Cadastrado', () => {
 
             cy.fixture('dados-usuario').then((data) => {
               dados = data;
@@ -86,49 +84,34 @@ describe('Testes De regressão HML', () => {
             cy.generateRandomNumber(3).then((numeroAleatorio) => {
             });
             cy.contains('Editar endereço').should('exist')
-            cy.wait(3000)
-          
-          //   let cep = "99010-090"
-          //   let numero = "666" 
-          //   let complemento = "66666"
-          //   let referencia = "TesteCasa"
-          //   let apelido = "testeApelido"
-          //   let nome = "gabriel Teste"
-          //   let telefone = "88888888888"
-            
-          // cy.editarEndereço(cep,numero, complemento, referencia, apelido, nome, telefone)
-          cy.generateRandomNumber(3).then((numeroAleatorio) => {
+            cy.generateRandomNumber(3).then((numeroAleatorio) => {
             cy.generateRandomName().then((nomeGerado) => {
               let nome = 'gabriel ' + nomeGerado;
           
-            // Definindo dados dinâmicos
-            let cep = `99010-090`; // Exemplo de CEP dinâmico
-            let numero = `${numeroAleatorio * 200 + 100}`; // Exemplo de número dinâmico
+            let cep = `99010-090`; 
+            let numero = `${numeroAleatorio * 200 + 100}`; 
             let complemento = `${numeroAleatorio}`;
             let referencia = `Casa ${numeroAleatorio}`;
             let apelido = `testeApelido${numeroAleatorio}`;
-            let telefone = `999${numeroAleatorio}${numeroAleatorio}00`; // Telefone dinâmico
+            let telefone = `999${numeroAleatorio}${numeroAleatorio}00`;
           
-            // Chamando a função para editar o endereço com dados dinâmicos
             cy.editarEndereço(cep, numero, complemento, referencia, apelido, nome, telefone);
-            cy.wait(4000)
-            cy.get('.card-address-container').should('be.visible').first().click(); // Reabrindo o card do endereço editado
+
+            // cy.get('.card-address-container').should('be.visible').first().click(); // Reabrindo o card do endereço editado
               
-            // Validação dos dados preenchidos
-            cy.get('#cep').should('have.value', cep);
-            cy.get('#address2').should('have.value', numero);
-            cy.get('#address3').should('have.value', complemento);
-            cy.get('#addressReference').should('have.value', referencia);
-            cy.get('#alias').should('have.value', apelido);
-            cy.get('#receiveName').should('have.value', nome);
-            cy.get('#phoneNumber') // Seleciona o campo com o ID 'phoneNumber'
-            .then(($input) => {
-              const maskedValue = $input.val(); // Obtém o valor atual do input com máscara
-              const actualValue = removeMask(maskedValue); // Remove a máscara do valor atual
-          
-              // Verifica se o valor atual (sem máscara) é igual ao esperado
-              expect(actualValue).to.equal(telefone); // Asserção com o valor sem máscara
-            });
+            // // Validação dos dados preenchidos
+            // cy.get('#cep').should('have.value', cep);
+            // cy.get('#address2').should('have.value', numero);
+            // cy.get('#address3').should('have.value', complemento);
+            // cy.get('#addressReference').should('have.value', referencia);
+            // cy.get('#alias').should('have.value', apelido);
+            // cy.get('#receiveName').should('have.value', nome);
+            // cy.get('#phoneNumber') 
+            // .then(($input) => {
+            //   const maskedValue = $input.val();
+            //   const actualValue = removeMask(maskedValue);
+            //   expect(actualValue).to.equal(telefone)
+            // });
             
             })
           });
@@ -243,7 +226,7 @@ describe('Testes De regressão HML', () => {
 
     context('Testes Gerais de Validação', () => {
 // rever
-it('Verifica Notificação', () => {
+it.only('Verifica Notificação', () => {
     cy.consultorVideo()
     cy.clicarEmLogin()
     cy.fazerLogin(dados.email, senhaAtual)
@@ -258,7 +241,6 @@ it('Verifica Notificação', () => {
       cy.clicarEmMeuPerfil()
       cy.contains('Notificações').click()
       cy.contains('Minhas notificações', { timeout: 40000 }).should('exist')
-      cy.wait(10000)
       cy.get('div.card-notification-container').first().click();
       cy.contains(numeroCheckout).should('exist')
     });

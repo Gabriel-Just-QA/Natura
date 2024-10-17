@@ -3,7 +3,7 @@ const { defineConfig } = require('cypress')
 module.exports = defineConfig({
   e2e: {
     defaultCommandTimeout: 20000,
-    baseUrl: 'https://sales-mgmt-cb-mfe-composer-akamai.prd.naturacloud.com/',
+    baseUrl: 'https://sales-mgmt-cb-mfe-composer-akamai.hml.naturacloud.com/',
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on);
     },

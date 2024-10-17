@@ -28,9 +28,9 @@ async function sendEmail() {
 
   const mailOptions = {
     from: 'gabriel.qa.teste@gmail.com',
-    to: 'gabrieljust123@gmail.com',//  
-    subject: 'Relatório de Testes teste novo', // Assunto do e-mail
-    text: 'Enviando os relatórios de teste2.', // Texto padrão do e-mail
+    to: 'gabrieljust123@gmail.com,gabriel.qa.teste@gmail.com',//  
+    subject: 'Relatório de Testes', // Assunto do e-mail
+    text: 'Enviando os relatórios de teste.', // Texto padrão do e-mail
     html: `<h1>Relatório de Testes e2e</h1>
            <p>Data: ${new Date().toLocaleString()}</p>
            <p>O relatório dos testes estão em anexo!</p>`, // Mensagem em HTML
