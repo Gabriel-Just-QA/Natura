@@ -167,7 +167,7 @@ describe('Fluxo Completo', () => {
 
   context('Teste de Edição de dados', () => {
     
-    it.only('Cadastrar Primeiro endereço', () => {
+    it('Cadastrar Primeiro endereço', () => {
       if (fixture) {
         cy.consultorVideo()
         cy.clicarEmLogin()
@@ -181,7 +181,7 @@ describe('Fluxo Completo', () => {
       }
   });
 
-      it.only('Editar Endereço Cadastrado', () => {
+      it('Editar Endereço Cadastrado', () => {
       
         cy.consultorVideo()
         cy.clicarEmLogin()
@@ -229,6 +229,9 @@ describe('Fluxo Completo', () => {
         })
 
         it('Mudar Senha', () => {
+
+
+
           cy.updateFixture('dados-usuario', 'bkpSenha', senhaAtual)
           cy.gerarSenhaAleatoria().then((novaSenha) => {
             cy.consultorVideo()
@@ -250,22 +253,27 @@ describe('Fluxo Completo', () => {
 
 
       it('Editar dados pessoais', () => {
-      
+        if (!verifica) {
+          cy.generateRandomName().then((nomeGerado) => {
+          
+          })
+
+        } else {
+          
+        }
         cy.consultorVideo()
         cy.clicarEmLogin()
         cy.fazerLogin(dados.email, senhaAtual)
         cy.clicarEmMeuPerfil()
         cy.generateRandomNumber(3).then((numeroAleatorio) => {
-          cy.generateRandomName().then((nomeGerado) => {
             cy.generateDate().then((dataGerada) => {
-            let nome = 'gabriel ' + nomeGerado;
+            let nome = 'gabriel ' + nomeGeradoNovo;
             let data = dataGerada
             let telefone = `999${numeroAleatorio}${numeroAleatorio}00`;
       
             cy.editarDadosPessoais(nome, data, telefone)
       
             })
-          })
         });
       
       
@@ -290,52 +298,7 @@ describe('Fluxo Completo', () => {
 
 
 
-  it('Cupom primeira compra', () => {
-// trocar variavel
-    if (!fixture) {
-  cy.consultorVideo()
-  cy.clicarEmLogin()
-  cy.fazerLogin(email, senhaAtual)
-  cy.pesquisarProduto('kaiak')
-  cy.comprarBusca()
-  cy.irCheckout()
-
-  cy.get('.checkout-order-resume-information-row.total span').last().invoke('text').then((valorTotal) => {
-      // Remover caracteres indesejados
-      const valorLimpo = valorTotal.replace('R$ ', '').replace(',', '.');
-      const valorTotalOriginal = parseFloat(valorLimpo); // Valor total original em número
-
-      // Aplicar o cupom de desconto
-      cy.get('.accordion-button.checkout').click();
-      cy.get('#input-coupon').should('be.visible').type('PRIMEIRACOMPRA');
-      cy.contains('Aplicar Cupom').click();
-
-      // Capturar o valor total após o desconto
-      cy.get('.checkout-order-resume-information-row.total span').last().invoke('text').then((valorDesconto) => {
-          const valorLimpoDesconto = valorDesconto.replace('R$ ', '').replace(',', '.');
-          const valorTotalComDesconto = parseFloat(valorLimpoDesconto); // Valor total após desconto
-
-          // Calcular a diferença de valor
-          const diferencaValor = valorTotalOriginal - valorTotalComDesconto;
-          cy.log(`A diferença de valor é: R$ ${diferencaValor.toFixed(2)}`);
-
-          // Calcular a porcentagem de desconto
-          const percentualDesconto = (diferencaValor / valorTotalOriginal) * 100;
-          cy.log(`A porcentagem de desconto é: ${percentualDesconto.toFixed(2)}%`);
-
-          // Verificar se o valor com desconto é menor que o total
-          expect(valorTotalComDesconto).to.be.lessThan(valorTotalOriginal);
-
-          // Verificar se o desconto é de pelo menos X%
-          const descontoEsperado = 10; // Porcentagem de desconto esperada
-          expect(percentualDesconto).to.be.gte(descontoEsperado);
-      })
-    });
-} else {
-  cy.log("não é o primeiro Cadastro")
-}
-    });
-
+  
 
 
 })

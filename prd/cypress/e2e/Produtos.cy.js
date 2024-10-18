@@ -34,7 +34,7 @@ it.only('Realizar compra pelo Cartão PDP', () => {
     cy.checkout()
 });
 
-it('Realizar compra pelo Boleto PDP', () => {
+it.only('Realizar compra pelo Boleto PDP', () => {
   cy.consultorVideo()
   cy.clicarEmLogin()
   cy.fazerLogin(dados.email, senhaAtual)
@@ -46,7 +46,7 @@ it('Realizar compra pelo Boleto PDP', () => {
   cy.checkout()
 });
 
-it('Realizar compra pelo Pix PDP', () => {
+it.only('Realizar compra pelo Pix PDP', () => {
   cy.consultorVideo()
   cy.clicarEmLogin()
   cy.fazerLogin(dados.email, senhaAtual)

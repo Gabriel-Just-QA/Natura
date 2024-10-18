@@ -194,13 +194,15 @@ Cypress.Commands.add('cadastrarEndereço', (cep,) => {
             });
 
 Cypress.Commands.add('editarEndereço', (cep,numero, complemento, referencia, apelido, nome, telefone) => {
+  cy.wait(4000)
             cy.get('#cep').click().clear().type(cep);
             cy.get('#address2').click().clear().type(numero);
             cy.get('#address3').click().clear().type(complemento);
             cy.get('#addressReference').click().clear().type(referencia);
             cy.get('#alias').click().clear().type(apelido);
             cy.get('#receiveName').click().clear().type(nome);
-            cy.get('#phoneNumber').click().clear().type(telefone);       
+            cy.get('#phoneNumber').click().clear().type(telefone);   
+
             cy.get('#checkMainAddress') // Seleciona o input checkbox
             .then(($checkbox) => {
               if (!$checkbox.is(':checked')) { // Verifica se a checkbox não está marcada
@@ -247,7 +249,7 @@ Cypress.Commands.add('editarDadosPessoais', (nome, data, telefone) => {
 // Comprass
 Cypress.Commands.add('primeiroProduto', () => {
 
-  cy.get('.h-categoryResults__results .card').first().click()
+  cy.get('.h-categoryResults__results .card').eq(1).click()
   cy.get('.product-detail-banner-container').should('be.visible')
 
 });
@@ -288,7 +290,7 @@ Cypress.Commands.add('checkout', () => {
       cy.wrap($radio).click();
     }
   });
-RDM
+
   cy.contains('button','Finalizar compra').should('be.enabled').click()
   
   cy.get('.profile-order-detail-content', { timeout: 100000 }).should('be.visible');
