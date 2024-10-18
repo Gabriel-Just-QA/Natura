@@ -60,7 +60,7 @@ Cypress.Commands.add('gerarSenhaAleatoria', () => {
 
 // Funcionalidades Principais
             
-  Cypress.Commands.add('selecionarConsultor', (consultor = "Juanito") => {
+  Cypress.Commands.add('selecionarConsultor', (consultor = "hml") => {
 
               cy.visit('/');
               cy.get('#inputSearchConsultant').type(consultor)
@@ -256,7 +256,7 @@ Cypress.Commands.add('primeiroProduto', () => {
 Cypress.Commands.add('adicionarProduto', () => {
   cy.contains('Adicionar').click()
   cy.contains('Produto adicionado a sacola com sucesso!').should('exist')
-  cy.contains('Ver minha sacola').click()
+  cy.contains('Ver minha sacola').click({force: true})
   cy.get('h1.checkout-title').contains('Sacola').should('be.visible')
 });
 

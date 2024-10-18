@@ -5,7 +5,7 @@ describe('Fluxo Completo', () => {
     }
 
     let senhaAtual , nome, email, telefone, cpf, senha, dataNascimento, cep, numero , complemento, referencia, apelido, cardNumber, cardDate, cvv , nomeCompra
-    let fixture = true
+    let fixture = false
 
 
 
