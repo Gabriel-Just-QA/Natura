@@ -60,7 +60,7 @@ Cypress.Commands.add('gerarSenhaAleatoria', () => {
 
 // Funcionalidades Principais
             
-  Cypress.Commands.add('selecionarConsultor', (consultor = "hml") => {
+  Cypress.Commands.add('selecionarConsultor', (consultor = "juanito") => {
 
               cy.visit('/');
               cy.get('#inputSearchConsultant').type(consultor)
