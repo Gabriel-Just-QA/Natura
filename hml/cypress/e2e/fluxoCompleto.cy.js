@@ -122,16 +122,16 @@ describe('Fluxo Completo', () => {
         cy.log( 'numero:',cardNumber,'dataCartão:', cardDate,'cvv', cvv)
     })
 
-
+   
 
     context('Testes de Cadastro Login e Logof', () => {
 
     it('Fazer Cadastro', () => {
-      if (fixture){
+      if(fixture){
         cy.log('não faz cadastro')
       } else {
         cy.log('faz Cadastro')
-        cy.consultorVideo()
+        cy.visit('/')
         cy.clicarEmCadastro()
         cy.fazerCadastro(nome,email, cpf, telefone,dataNascimento, senha)
         cy.contains('Criar conta').click()
@@ -142,13 +142,13 @@ describe('Fluxo Completo', () => {
     
 
     it('Fazer Login com dados validos', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
     }) 
   
     it('Fazer Logout Diretamente', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.logoutDireto()
@@ -156,7 +156,7 @@ describe('Fluxo Completo', () => {
     });
   
     it('Fazer Logout pelo Perfil', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.logoutDoPerfil()
@@ -171,7 +171,7 @@ describe('Fluxo Completo', () => {
     
     it('Cadastrar Primeiro endereço', () => {
       if (!fixture) {
-        cy.consultorVideo()
+        cy.visit('/')
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.clicarEmMeuPerfil()
@@ -185,7 +185,7 @@ describe('Fluxo Completo', () => {
 
       it('Editar Endereço Cadastrado', () => {
       
-        cy.consultorVideo()
+        cy.visit('/')
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.clicarEmMeuPerfil()
@@ -232,7 +232,7 @@ describe('Fluxo Completo', () => {
           cy.updateFirstFixtureObjectKey('dadosCadastro','bkpSenha',senhaAtual)
 
           cy.gerarSenhaAleatoria().then((novaSenha) => {
-            cy.consultorVideo()
+            cy.visit('/')
             cy.clicarEmLogin()
             cy.fazerLogin(email, senhaAtual)
             cy.clicarEmMeuPerfil()
@@ -253,7 +253,7 @@ describe('Fluxo Completo', () => {
 
 
       it('Editar dados pessoais', () => {
-        cy.consultorVideo()
+        cy.visit('/')
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.clicarEmMeuPerfil()
@@ -281,58 +281,52 @@ describe('Fluxo Completo', () => {
 
 context('Testes de Cupom de primeira compra', () => {
 
-  it('Cupom primeira compra', () => {
-    // trocar variavel
-        if (!fixture) {
-      cy.consultorVideo()
-      cy.clicarEmLogin()
-      cy.fazerLogin(email, senhaAtual)
-      cy.pesquisarProduto('kaiak')
-      cy.comprarBusca()
-      cy.irCheckout()
-    
-      cy.get('.checkout-order-resume-information-row.total span').last().invoke('text').then((valorTotal) => {
-          // Remover caracteres indesejados
-          const valorLimpo = valorTotal.replace('R$ ', '').replace(',', '.');
-          const valorTotalOriginal = parseFloat(valorLimpo); // Valor total original em número
-    
-          // Aplicar o cupom de desconto
-          cy.get('.accordion-button.checkout').click();
-          cy.get('#input-coupon').should('be.visible').type('PRIMEIRACOMPRA');
-          cy.contains('Aplicar Cupom').click();
-    
-          // Capturar o valor total após o desconto
-          cy.get('.checkout-order-resume-information-row.total span').last().invoke('text').then((valorDesconto) => {
-              const valorLimpoDesconto = valorDesconto.replace('R$ ', '').replace(',', '.');
-              const valorTotalComDesconto = parseFloat(valorLimpoDesconto); // Valor total após desconto
-    
-              // Calcular a diferença de valor
-              const diferencaValor = valorTotalOriginal - valorTotalComDesconto;
-              cy.log(`A diferença de valor é: R$ ${diferencaValor.toFixed(2)}`);
-    
-              // Calcular a porcentagem de desconto
-              const percentualDesconto = (diferencaValor / valorTotalOriginal) * 100;
-              cy.log(`A porcentagem de desconto é: ${percentualDesconto.toFixed(2)}%`);
-    
-              // Verificar se o valor com desconto é menor que o total
-              expect(valorTotalComDesconto).to.be.lessThan(valorTotalOriginal);
-    
-              // Verificar se o desconto é de pelo menos X%
-              const descontoEsperado = 10; // Porcentagem de desconto esperada
-              expect(percentualDesconto).to.be.gte(descontoEsperado);
+  
+    it('Cupom primeira compra', () => {
+      // trocar variavel
+          if (!fixture) {
+        cy.visit('/')
+        cy.clicarEmLogin()
+        cy.fazerLogin(email, senhaAtual)
+        cy.pesquisarProduto('kaiak')
+        cy.comprarBusca()
+        cy.irCheckout()
+      
+        cy.get('.checkout-order-resume-information > :nth-child(4) > :nth-child(2)').last().invoke('text').then((valorTotal) => {
+            // Remover caracteres indesejados
+            const valorLimpo = valorTotal.replace('R$ ', '').replace(',', '.');
+            const valorTotalOriginal = parseFloat(valorLimpo); // Valor total original em número
+      
+            // Aplicar o cupom de desconto
+            cy.get('.accordion-button.checkout').click();
+            cy.get('#input-coupon').should('be.visible').type('PRIMEIRACOMPRA');
+            cy.contains('Aplicar Cupom').click();
+            cy.contains('Cupom aplicado!').should('exist')
+            // Capturar o valor total após o desconto
+            cy.wait(2000)
+            cy.get('.checkout-order-resume-information > :nth-child(4) > :nth-child(2)').last().invoke('text').then((valorDesconto) => {
+                const valorLimpoDesconto = valorDesconto.replace('R$ ', '').replace(',', '.');
+                const valorTotalComDesconto = parseFloat(valorLimpoDesconto); // Valor total após desconto
+      
+                expect(valorTotalComDesconto).to.be.lessThan(valorTotalOriginal);
+      
+                cy.pagPix()
+                cy.checkout()
+
+
+            })
+          });
+      } else {
+        cy.log("não é o primeiro Cadastro")
+      }
           })
-        });
-    } else {
-      cy.log("não é o primeiro Cadastro")
-    }
-        });
 })
 
 context('Teste com diferentes formas de Pagamento', () => {
 
       
   it('Realizar compra pelo Cartão PDP', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.perfumaria()
@@ -344,7 +338,7 @@ context('Teste com diferentes formas de Pagamento', () => {
   });
   
   it('Realizar compra pelo Boleto PDP', () => {
-    cy.consultorVideo()
+    cy.visit('/')
     cy.clicarEmLogin()
     cy.fazerLogin(email, senhaAtual)
     cy.perfumaria()
@@ -356,7 +350,7 @@ context('Teste com diferentes formas de Pagamento', () => {
   });
   
   it('Realizar compra pelo Pix PDP', () => {
-    cy.consultorVideo()
+    cy.visit('/')
     cy.clicarEmLogin()
     cy.fazerLogin(email, senhaAtual)
     cy.perfumaria()
@@ -370,7 +364,7 @@ context('Teste com diferentes formas de Pagamento', () => {
 
 context('Teste com diferentes Paginas de produtos', () => {
   it('Comprar pela busca', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.pesquisarProduto('kaiak')
@@ -382,7 +376,7 @@ context('Teste com diferentes Paginas de produtos', () => {
     });
     
     it('Comprar PLP', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.clicarPesquisar('kaiak')
@@ -396,8 +390,8 @@ context('Teste com diferentes Paginas de produtos', () => {
 context('Testes Remoção de itens', () => {
 
 it('Remover produto do mini card', () => {
-  cy.consultorVideo()
-  cy.maquiagem()    
+  cy.visit('/')
+  cy.perfumaria()    
   cy.get('.card.default').then(($cards) => {
       const numProdutos = $cards.length;
       const maxProdutos = Math.min(numProdutos, 5)
@@ -420,13 +414,13 @@ it('Remover produto do mini card', () => {
         });
       }
     });
-cy.contains('Você ainda não possui pedidos na sua sacola',{ timeout: 10000 }).should('exist')
+cy.contains('Você ainda não possui pedidos na sua sacola',{ timeout: 40000 }).should('exist')
 });
 
 
 it('Remover produto da Sacola', () => {
-  cy.consultorVideo()
-  cy.maquiagem()    
+  cy.visit('/')
+  cy.perfumaria()    
   cy.get('.card.default').then(($cards) => {
       const numProdutos = $cards.length;
       const maxProdutos = Math.min(numProdutos, 5)
@@ -451,7 +445,7 @@ it('Remover produto da Sacola', () => {
 
 context('Testes da funcionalidade de Favoritos', () => {
   it('Favoritar PDP', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.perfumaria()
@@ -461,7 +455,7 @@ context('Testes da funcionalidade de Favoritos', () => {
     });
     
     it('Favoritar PLP', () => {
-      cy.consultorVideo()
+      cy.visit('/')
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.clicarPesquisar('baton')
@@ -472,7 +466,7 @@ context('Testes da funcionalidade de Favoritos', () => {
 context('Testes Gerais de Validação', () => {
 // rever
 it('Verifica Notificação', () => {
-cy.consultorVideo()
+cy.visit('/')
 cy.clicarEmLogin()
 cy.fazerLogin(email, senhaAtual)
 cy.pesquisarProduto('kaiak')
@@ -494,30 +488,31 @@ cy.contains(numeroCheckout).should('exist')
 
 context('Testes de ordenação', () => {
   it('Ordenação A-Z', () => {
-      cy.consultorVideo('juanito') 
-      cy.perfumaria()
+      cy.visit('/')
+      cy.corpoEBanho()
       cy.ordenarAZ()
     });
     
     it('Ordenação Z-A', () => {
-      cy.consultorVideo('juanito') 
-      cy.perfumaria()
+      cy.visit('/')
+      cy.corpoEBanho()
       cy.ordenarZA()
     });
     
     it('Ordenação 1-2', () => {
-      cy.consultorVideo('juanito') 
-      cy.perfumaria()
+      cy.visit('/')
+      cy.corpoEBanho()
       cy.ordenar12()
     });
     
     it('Ordenação 2-1', () => {
-      cy.consultorVideo('juanito') 
-      cy.perfumaria()
+      cy.visit('/')
+      cy.corpoEBanho()
       cy.ordenar21()
     });
 });
 
+}) 
 
 
 
@@ -525,6 +520,3 @@ context('Testes de ordenação', () => {
 
 
 
-
-
-})

@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 
 const commands = [
-  { command: 'npx cypress run --spec "cypress/e2e/TESSSSSTEEE.cy.js"', name: 'Executar Cypress' },
+  { command: 'npx cypress run --spec "cypress/e2e/fluxoCompleto.cy.js"', name: 'Executar Cypress' },
   { command: 'node automação/convertToPDF.js', name: 'Converter para PDF' }, // caminho atualizado
   { command: 'node automação/sendReport.js', name: 'Enviar Relatório' } // caminho atualizado
 ];

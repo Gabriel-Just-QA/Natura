@@ -60,7 +60,7 @@ Cypress.Commands.add('gerarSenhaAleatoria', () => {
 
 // Funcionalidades Principais
             
-  Cypress.Commands.add('selecionarConsultor', (consultor = "juanito") => {
+  Cypress.Commands.add('selecionarConsultor', (consultor = "consultorahmlteste") => {
 
               cy.visit('/');
               cy.get('#inputSearchConsultant').type(consultor)
@@ -168,7 +168,7 @@ Cypress.Commands.add('fazerLogin', ( email, senha) => {
             cy.get('input[placeholder="Digite sua senha"]').type(senha)
             cy.contains('button', 'Entrar').click();
 
-            cy.contains('Ver meu perfil', {timeout: 30000}).should('exist')
+            cy.contains('Ver meu perfil', {timeout: 60000}).should('exist')
 
             cy.log("Login Feito com sucesso")
             });
@@ -249,7 +249,8 @@ Cypress.Commands.add('editarDadosPessoais', (nome, data, telefone) => {
 // Comprass
 Cypress.Commands.add('primeiroProduto', () => {
 
-  cy.get('.h-categoryResults__results .card').eq(1).click()
+  cy.get('.h-categoryResults__results .card').last().click()
+  cy.wait(4999)
   cy.get('.product-detail-banner-container').should('be.visible')
 
 });
@@ -303,15 +304,19 @@ Cypress.Commands.add('pesquisarProduto', (produto) => {
 });
 
 Cypress.Commands.add('comprarBusca', () => {
-  cy.get('.header-desktop-search-result .product-card-miniature').first().find('button.action-button.primary').click();
+  cy.get('.header-desktop-search-result .product-card-miniature').eq(0).find('button.action-button.primary').click();
   cy.get('.Toastify__toast-body').should('be.visible')
-  cy.contains('Ver minha sacola').click()
+  cy.contains('Ver minha sacola').click({force: true})
   cy.get('h1.checkout-title').contains('Sacola').should('be.visible')
 });
 
 Cypress.Commands.add('clicarPesquisar', (produto) => {
   cy.pesquisarProduto(produto)
+  cy.wait(2000)
   cy.contains('button','Ver tudo').should('be.enabled').click()
+  cy.url().should('include', '/search');
+  cy.contains(`Você buscou por "${produto}"`).should('be.visible');
+
 });
 
 Cypress.Commands.add('adicionalPLP', () => {

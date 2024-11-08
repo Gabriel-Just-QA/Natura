@@ -1,5 +1,6 @@
 // Gerenciamento de Dados
 
+
 Cypress.Commands.add('generateRandomName', (length = 5) => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let result = '';
@@ -59,7 +60,7 @@ Cypress.Commands.add('gerarSenhaAleatoria', () => {
 
 // Funcionalidades Principais
             
-  Cypress.Commands.add('selecionarConsultor', (consultor = "hml") => {
+  Cypress.Commands.add('selecionarConsultor', (consultor = "consultorahmlteste") => {
 
               cy.visit('/');
               cy.get('#inputSearchConsultant').type(consultor)
@@ -145,7 +146,19 @@ Cypress.Commands.add('marcas', () => {
   cy.url().should('include', '/marcas');
 });
 
+// Cadastro
 
+Cypress.Commands.add('fazerCadastro', ( nome,email, cpf, telefone , data,senha,) => {
+  cy.get('#register-name').type(nome);
+  cy.get('#register-email').type(email);
+  cy.get('#register-cpf').type(cpf);
+  cy.get('#register-cellphone').type(telefone);
+  cy.get('#register-birthdate').type(data);
+  cy.get('#others').check()
+  cy.get('#register-password').type(senha);
+  cy.get('#register-repeat-password').type(senha)
+  cy.get('#checkAdult').check({ force: true });
+});
 
 // Login logout
 
@@ -158,13 +171,11 @@ Cypress.Commands.add('fazerLogin', ( email, senha) => {
             cy.contains('Ver meu perfil', {timeout: 30000}).should('exist')
 
             cy.log("Login Feito com sucesso")
-            cy.wait(3000)
             });
 
 Cypress.Commands.add('logoutDireto', () => {
 
               cy.contains('Sair').click({ force: true });
-              cy.wait(3000)
               cy.contains('Ver meu perfil').should('not.exist')
             });
 
@@ -172,7 +183,6 @@ Cypress.Commands.add('logoutDoPerfil', () => {
 
               cy.clicarEmMeuPerfil()
               cy.contains('#gtmSidemenu-list-item-text', 'Sair').click();
-              cy.wait(3000)
               cy.get('.profile-data-title').should('not.exist')
             });
 
@@ -184,13 +194,15 @@ Cypress.Commands.add('cadastrarEndereço', (cep,) => {
             });
 
 Cypress.Commands.add('editarEndereço', (cep,numero, complemento, referencia, apelido, nome, telefone) => {
+  cy.wait(4000)
             cy.get('#cep').click().clear().type(cep);
             cy.get('#address2').click().clear().type(numero);
             cy.get('#address3').click().clear().type(complemento);
             cy.get('#addressReference').click().clear().type(referencia);
             cy.get('#alias').click().clear().type(apelido);
             cy.get('#receiveName').click().clear().type(nome);
-            cy.get('#phoneNumber').click().clear().type(telefone);       
+            cy.get('#phoneNumber').click().clear().type(telefone);   
+
             cy.get('#checkMainAddress') // Seleciona o input checkbox
             .then(($checkbox) => {
               if (!$checkbox.is(':checked')) { // Verifica se a checkbox não está marcada
@@ -198,7 +210,9 @@ Cypress.Commands.add('editarEndereço', (cep,numero, complemento, referencia, ap
               }
               cy.contains('Salvar endereço').click()
             });
-                    });
+            cy.contains(/Dados atualizados com sucesso|Endereço salvo com sucesso/).should('exist');
+
+                                });
 
 Cypress.Commands.add('editarDadosPessoais', (nome, data, telefone) => {
             cy.get('#name').click().clear().type(nome)
@@ -228,21 +242,21 @@ Cypress.Commands.add('editarDadosPessoais', (nome, data, telefone) => {
                       });
                     });
                     cy.contains('Salvar alterações').click()
-            cy.get('.Toastify__toast-body', { timeout: 10000 }).should('be.visible')
+            cy.contains('Dados atualizados com sucesso', { timeout: 10000 }).should('be.visible')
             
           })
 
 // Comprass
 Cypress.Commands.add('primeiroProduto', () => {
 
-  cy.get('.h-categoryResults__results .card').first().click()
+  cy.get('.h-categoryResults__results .card').eq(1).click()
   cy.get('.product-detail-banner-container').should('be.visible')
 
 });
 Cypress.Commands.add('adicionarProduto', () => {
   cy.contains('Adicionar').click()
-  cy.get('.Toastify__toast-body').should('be.visible')
-  cy.contains('Ver minha sacola').click()
+  cy.contains('Produto adicionado a sacola com sucesso!').should('exist')
+  cy.contains('Ver minha sacola').click({force: true})
   cy.get('h1.checkout-title').contains('Sacola').should('be.visible')
 });
 
@@ -276,7 +290,6 @@ Cypress.Commands.add('checkout', () => {
       cy.wrap($radio).click();
     }
   });
-    cy.wait(2000)
 
   cy.contains('button','Finalizar compra').should('be.enabled').click()
   
@@ -292,7 +305,7 @@ Cypress.Commands.add('pesquisarProduto', (produto) => {
 Cypress.Commands.add('comprarBusca', () => {
   cy.get('.header-desktop-search-result .product-card-miniature').first().find('button.action-button.primary').click();
   cy.get('.Toastify__toast-body').should('be.visible')
-  cy.contains('Ver minha sacola').click()
+  cy.contains('Ver minha sacola').click({force: true})
   cy.get('h1.checkout-title').contains('Sacola').should('be.visible')
 });
 
@@ -453,3 +466,55 @@ Cypress.Commands.add('updateFixture', (fixtureName, key, newData) => {
             });
           });
           
+
+// Comando customizado para salvar dados de cadastro no JSON
+Cypress.Commands.add('salvarDadosCadastro', (dadosCadastro) => {
+  const fixtureFile = 'cypress/fixtures/dadosCadastro.json';
+  
+  // Lê o arquivo atual, e inicializa se necessário
+  cy.readFile(fixtureFile, { timeout: 10000 }).then((data) => {
+    // Verifica se o arquivo está vazio ou sem dados
+    if (!Array.isArray(data)) {
+      data = [];  // Inicializa como array vazio
+    }
+    
+    // Apenas adiciona se houver dados válidos
+    if (dadosCadastro && Object.keys(dadosCadastro).length > 0) {
+      // Insere o novo cadastro no início do array
+      data.unshift(dadosCadastro);
+    }
+    
+    // Escreve de volta ao arquivo
+    cy.writeFile(fixtureFile, data);
+  });
+});
+
+
+Cypress.Commands.add('updateFirstFixtureObjectKey', (fixtureName, key, newValue) => {
+  cy.readFile(`cypress/fixtures/${fixtureName}.json`).then((data) => {
+    // Verifica se o arquivo tem ao menos um objeto no array
+    if (Array.isArray(data) && data.length > 0) {
+      // Pega o primeiro objeto do array
+      let firstObject = data[0];
+      
+      // Verifica se a chave existe no objeto
+      if (firstObject.hasOwnProperty(key)) {
+        // Atualiza o valor da chave
+        firstObject[key] = newValue;
+
+        // Atualiza o array com o objeto modificado
+        data[0] = firstObject;
+        
+        // Sobrescreve o arquivo fixture com o novo dado
+        cy.writeFile(`cypress/fixtures/${fixtureName}.json`, data).then(() => {
+          cy.log(`A chave "${key}" foi atualizada para "${newValue}" no primeiro objeto.`);
+        });
+      } else {
+        cy.log(`A chave "${key}" não existe no primeiro objeto.`);
+      }
+    } else {
+      cy.log('O array na fixture está vazio ou não é um array.');
+    }
+  });
+});
+
