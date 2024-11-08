@@ -1,0 +1,6 @@
+import './dataManagement'
+import './mainFunctions'
+import './navigationSections'
+import './sorting'
+import './userAccount'
+import 'cypress-mochawesome-reporter/register'
