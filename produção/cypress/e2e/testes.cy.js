@@ -80,7 +80,19 @@ describe('Fluxo Completo', () => {
       });
 
 
+      it('Comprar pela busca', () => {
+        cy.visit('/')
+        cy.clicarEmLogin()
+        cy.fazerLogin(email, senhaAtual)
+        cy.pesquisarProduto('kaiak')
+        cy.wait(5000)
+    
+        cy.comprarBusca()
+        cy.irCheckout()
+        cy.pagPix()
+        cy.checkout()
       
+      });
 
 
     

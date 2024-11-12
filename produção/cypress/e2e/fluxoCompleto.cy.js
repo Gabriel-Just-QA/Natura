@@ -5,19 +5,17 @@ describe('Fluxo Completo', () => {
     }
 
     let senhaAtual , nome, email, telefone, cpf, senha, dataNascimento, cep, numero , complemento, referencia, apelido, cardNumber, cardDate, cvv , nomeCompra
-    let fixture = true
 
-
+// Se usa os dados de uma conta ja criada, ou cria uma nova conta, faz o fluxo inteiro com cadastro, primeiro endereço, cupom primeira compra ( true ou false)
+let fixture = false
 
       before(() => {
         
         if(fixture){
           cy.fixture('dadosCadastro').then((data) => {
-            // Pega o objeto no índice 0, que é o último cadastro salvo
             if (Array.isArray(data) && data.length > 0) {
               const ultimoCadastro = data[0]; // Objeto mais recente (index 0)
               
-              // Mapeia as variáveis com os dados do objeto
               nome = ultimoCadastro.nome;
               email = ultimoCadastro.email;
               nomeCompra = ultimoCadastro.nomeCompra
@@ -127,18 +125,18 @@ describe('Fluxo Completo', () => {
 
     context('Testes de Cadastro Login e Logof', () => {
 
-    // it('Fazer Cadastro', () => {
-    //   if(fixture){
-    //     cy.log('não faz cadastro')
-    //   } else {
-    //     cy.log('faz Cadastro')
-    //     cy.visit('/')
-    //     cy.clicarEmCadastro()
-    //     cy.fazerCadastro(nome,email, cpf, telefone,dataNascimento, senha)
-    //     cy.contains('Criar conta').click()
-    //     cy.contains('Cadastro realizado com sucesso').should('exist')
-    //   }
-    // });
+    it('Fazer Cadastro', () => {
+      if(fixture){
+        cy.log('não faz cadastro')
+      } else {
+        cy.log('faz Cadastro')
+        cy.visit('/')
+        cy.clicarEmCadastro()
+        cy.fazerCadastro(nome,email, cpf, telefone,dataNascimento, senha)
+        cy.contains('Criar conta').click()
+        cy.contains('Cadastro realizado com sucesso').should('exist')
+      }
+    });
 
     
 
@@ -170,19 +168,19 @@ describe('Fluxo Completo', () => {
 
   context('Teste de Edição de dados', () => {
     
-  //   it('Cadastrar Primeiro endereço', () => {
-  //     if (!fixture) {
-  //       cy.visit('/')
-  //       cy.clicarEmLogin()
-  //       cy.fazerLogin(email, senhaAtual)
-  //       cy.clicarEmMeuPerfil()
-  //       cy.contains('Meus endereços').click()
-  //       cy.contains('Adicionar endereço').should('exist').click()
-  //       cy.editarEndereço(cep, numero, complemento, referencia, apelido, nome, telefone);
-  //     } else {
-  //       cy.log("Não é o primeiro cadastro!")
-  //     }
-  // });
+    it('Cadastrar Primeiro endereço', () => {
+      if (!fixture) {
+        cy.visit('/')
+        cy.clicarEmLogin()
+        cy.fazerLogin(email, senhaAtual)
+        cy.clicarEmMeuPerfil()
+        cy.contains('Meus endereços').click()
+        cy.contains('Adicionar endereço').should('exist').click()
+        cy.editarEndereço(cep, numero, complemento, referencia, apelido, nome, telefone);
+      } else {
+        cy.log("Não é o primeiro cadastro!")
+      }
+  });
 
       it('Editar Endereço Cadastrado', () => {
       
