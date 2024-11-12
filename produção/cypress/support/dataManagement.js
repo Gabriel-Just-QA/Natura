@@ -71,8 +71,8 @@ Cypress.Commands.add('updateFixture', (fixtureName, key, newData) => {
 
 
 // Comando customizado para salvar dados de cadastro no JSON
-Cypress.Commands.add('salvarDadosCadastro', (dadosCadastro) => {
-const fixtureFile = 'cypress/fixtures/dadosCadastro.json';
+Cypress.Commands.add('salvarDadosCadastro', (dadosCadastro,fixtureName) => {
+const fixtureFile = `cypress/fixtures/${fixtureName}.json`;
 
 // Lê o arquivo atual, e inicializa se necessário
 cy.readFile(fixtureFile, { timeout: 10000 }).then((data) => {

@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "cypress": "^13.15.0",
+    "cypress-skip-test": "^1.0.0",
     "nodemailer": "^6.9.15",
     "puppeteer": "^23.5.3",
     "wkhtmltopdf": "^0.4.0"

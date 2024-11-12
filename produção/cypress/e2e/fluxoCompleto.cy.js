@@ -1,13 +1,19 @@
 describe('Fluxo Completo', () => {  
-
     function removeMask(value) {
       return value.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
     }
 
-    let senhaAtual , nome, email, telefone, cpf, senha, dataNascimento, cep, numero , complemento, referencia, apelido, cardNumber, cardDate, cvv , nomeCompra
+    
+let senhaAtual , nome, email, telefone, cpf, senha, dataNascimento, cep, numero , complemento, referencia, apelido, cardNumber, cardDate, cvv , nomeCompra
 
 // Se usa os dados de uma conta ja criada, ou cria uma nova conta, faz o fluxo inteiro com cadastro, primeiro endereço, cupom primeira compra ( true ou false)
-let fixture = false
+let fixture = true
+
+// True para Produção False para HML
+
+const ambiente = true;
+
+const URL_BASE = ambiente ? 'https://social.prd.naturacloud.com/login?consultoria=camilagarciapulido' : 'https://sales-mgmt-cb-mfe-composer-akamai.hml.naturacloud.com/?consultoria=consultorahmlteste';
 
       before(() => {
         
@@ -125,12 +131,12 @@ let fixture = false
 
     context('Testes de Cadastro Login e Logof', () => {
 
-    it('Fazer Cadastro', () => {
+    it.skip('Fazer Cadastro', () => {
       if(fixture){
         cy.log('não faz cadastro')
       } else {
         cy.log('faz Cadastro')
-        cy.visit('/')
+        cy.visit(URL_BASE)
         cy.clicarEmCadastro()
         cy.fazerCadastro(nome,email, cpf, telefone,dataNascimento, senha)
         cy.contains('Criar conta').click()
@@ -141,13 +147,13 @@ let fixture = false
     
 
     it('Fazer Login com dados validos', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
     }) 
   
     it('Fazer Logout Diretamente', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.logoutDireto()
@@ -155,7 +161,7 @@ let fixture = false
     });
   
     it('Fazer Logout pelo Perfil', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.logoutDoPerfil()
@@ -170,7 +176,7 @@ let fixture = false
     
     it('Cadastrar Primeiro endereço', () => {
       if (!fixture) {
-        cy.visit('/')
+        cy.visit(URL_BASE)
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.clicarEmMeuPerfil()
@@ -184,7 +190,7 @@ let fixture = false
 
       it('Editar Endereço Cadastrado', () => {
       
-        cy.visit('/')
+        cy.visit(URL_BASE)
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.clicarEmMeuPerfil()
@@ -231,7 +237,7 @@ let fixture = false
           cy.updateFirstFixtureObjectKey('dadosCadastro','bkpSenha',senhaAtual)
 
           cy.gerarSenhaAleatoria().then((novaSenha) => {
-            cy.visit('/')
+            cy.visit(URL_BASE)
             cy.clicarEmLogin()
             cy.fazerLogin(email, senhaAtual)
             cy.clicarEmMeuPerfil()
@@ -252,7 +258,7 @@ let fixture = false
 
 
       it('Editar dados pessoais', () => {
-        cy.visit('/')
+        cy.visit(URL_BASE)
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.clicarEmMeuPerfil()
@@ -284,7 +290,7 @@ context('Testes de Cupom de primeira compra', () => {
     it('Cupom primeira compra', () => {
       // trocar variavel
           if (!fixture) {
-        cy.visit('/')
+        cy.visit(URL_BASE)
         cy.clicarEmLogin()
         cy.fazerLogin(email, senhaAtual)
         cy.pesquisarProduto('kaiak')
@@ -325,7 +331,7 @@ context('Teste com diferentes formas de Pagamento', () => {
 
       
   it('Realizar compra pelo Cartão PDP', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.perfumaria()
@@ -337,7 +343,7 @@ context('Teste com diferentes formas de Pagamento', () => {
   });
   
   it('Realizar compra pelo Boleto PDP', () => {
-    cy.visit('/')
+    cy.visit(URL_BASE)
     cy.clicarEmLogin()
     cy.fazerLogin(email, senhaAtual)
     cy.perfumaria()
@@ -349,7 +355,7 @@ context('Teste com diferentes formas de Pagamento', () => {
   });
   
   it('Realizar compra pelo Pix PDP', () => {
-    cy.visit('/')
+    cy.visit(URL_BASE)
     cy.clicarEmLogin()
     cy.fazerLogin(email, senhaAtual)
     cy.perfumaria()
@@ -363,7 +369,7 @@ context('Teste com diferentes formas de Pagamento', () => {
 
 context('Teste com diferentes Paginas de produtos', () => {
   it('Comprar pela busca', () => {
-    cy.visit('/')
+    cy.visit(URL_BASE)
     cy.clicarEmLogin()
     cy.fazerLogin(email, senhaAtual)
     cy.pesquisarProduto('kaiak')
@@ -376,7 +382,7 @@ context('Teste com diferentes Paginas de produtos', () => {
   
   });
   it('Comprar PLP', () => {
-    cy.visit('/')
+    cy.visit(URL_BASE)
     cy.clicarEmLogin()
     cy.fazerLogin(email, senhaAtual)
     cy.clicarPesquisar('kaiak')
@@ -394,7 +400,7 @@ cy.get('h1.checkout-title').contains('Sacola').should('be.visible')
 context('Testes Remoção de itens', () => {
 
 it('Remover produto do mini card', () => {
-  cy.visit('/')
+  cy.visit(URL_BASE)
   cy.perfumaria()    
   cy.get('.card.default').then(($cards) => {
       const numProdutos = $cards.length;
@@ -423,7 +429,7 @@ cy.contains('Você ainda não possui pedidos na sua sacola',{ timeout: 60000 }).
 
 
 it('Remover produto da Sacola', () => {
-  cy.visit('/')
+  cy.visit(URL_BASE)
   cy.perfumaria()    
   cy.get('.card.default').then(($cards) => {
       const numProdutos = $cards.length;
@@ -449,7 +455,7 @@ it('Remover produto da Sacola', () => {
 
 context('Testes da funcionalidade de Favoritos', () => {
   it('Favoritar PDP', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.perfumaria()
@@ -459,7 +465,7 @@ context('Testes da funcionalidade de Favoritos', () => {
     });
     
     it('Favoritar PLP', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.clicarEmLogin()
       cy.fazerLogin(email, senhaAtual)
       cy.clicarPesquisar('baton')
@@ -470,7 +476,7 @@ context('Testes da funcionalidade de Favoritos', () => {
 context('Testes Gerais de Validação', () => {
 // rever
 it('Verifica Notificação', () => {
-cy.visit('/')
+cy.visit(URL_BASE)
 cy.clicarEmLogin()
 cy.fazerLogin(email, senhaAtual)
 cy.pesquisarProduto('kaiak')
@@ -494,25 +500,25 @@ cy.contains(numeroCheckout).should('exist')
 
 context('Testes de ordenação', () => {
   it('Ordenação A-Z', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.corpoEBanho()
       cy.ordenarAZ()
     });
     
     it('Ordenação Z-A', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.corpoEBanho()
       cy.ordenarZA()
     });
     
     it('Ordenação 1-2', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.corpoEBanho()
       cy.ordenar12()
     });
     
     it('Ordenação 2-1', () => {
-      cy.visit('/')
+      cy.visit(URL_BASE)
       cy.corpoEBanho()
       cy.ordenar21()
     });

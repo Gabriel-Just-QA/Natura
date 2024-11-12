@@ -1,283 +1,158 @@
-describe('Complete Flow', () => {  
+describe('Fluxo Completo', () => {
+  
+  let senhaAtual, nome, email, telefone, cpf, senha, dataNascimento, cep, numero, complemento, referencia, apelido, cardNumber, cardDate, cvv, nomeCompra;
 
-    function removeMask(value) {
-        return value.replace(/\D/g, ''); // Remove non-digit characters
+  // Se usa os dados de uma conta já criada ou cria uma nova conta, faz o fluxo inteiro com cadastro (true ou false)
+  let cadastro = false;
+
+  // Escolha do ambiente: True para Produção, False para HML
+  const ambiente = true;
+
+  const URL_BASE = ambiente ? 'https://social.prd.naturacloud.com/?consultoria=camilagarciapulido' : 'https://sales-mgmt-cb-mfe-composer-akamai.hml.naturacloud.com/?consultoria=consultorahmlteste';
+  const fixtureFile = ambiente ? 'cadastroPRD' : 'cadastroHML';
+
+  before(() => {
+    if (!cadastro) {
+      cy.fixture(fixtureFile).then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const ultimoCadastro = data[0];
+          nome = ultimoCadastro.nome;
+          email = ultimoCadastro.email;
+          nomeCompra = ultimoCadastro.nomeCompra;
+          telefone = ultimoCadastro.telefone;
+          cpf = ultimoCadastro.cpf;
+          senhaAtual = ultimoCadastro.senha;
+          dataNascimento = ultimoCadastro.dataNascimento;
+          cep = ultimoCadastro.cep;
+          numero = ultimoCadastro.numero;
+          complemento = ultimoCadastro.complemento;
+          referencia = ultimoCadastro.referencia;
+          apelido = ultimoCadastro.apelido;
+          cardNumber = ultimoCadastro.cardNumber;
+          cardDate = ultimoCadastro.cardDate;
+          cvv = ultimoCadastro.cvv;
+        } else {
+          cy.log('Nenhum dado encontrado no arquivo fixture.');
+        }
+      });
+    } else {
+      cy.log('faz cadastro novo');
+      cy.faker().then((faker) => {
+        cy.generateRandomNumber(3).then((numeroAleatorio) => {
+          cy.generateRandomName().then((nomeGerado) => {
+            cy.gerarSenhaAleatoria().then((senhaGerada) => {
+              cy.generateDate().then((dataGerada) => {
+                nome = 'gabriel ' + nomeGerado;
+                nomeCompra = 'gabriel ' + nomeGerado;
+                email = 'gabriel' + nomeGerado + '@tuamaeaquelaursa.com';
+                telefone = `999${numeroAleatorio}${numeroAleatorio}00`;
+                cpf = faker.br.cpf();
+                senha = senhaGerada;
+                senhaAtual = senha;
+                dataNascimento = dataGerada;
+                cep = `99010-090`;
+                numero = `${numeroAleatorio * 200 + 100}`;
+                complemento = `${numeroAleatorio}`;
+                referencia = `Casa ${numeroAleatorio}`;
+                apelido = `testeApelido${numeroAleatorio}`;
+                cardNumber = '5448280000000007';
+                cardDate = '0130';
+                cvv = '123';
+              });
+            });
+          });
+        });
+      });
     }
+  });
 
-    let currentPassword, name, email, phone, cpf, password, birthDate, zipCode, addressNumber, complement, reference, alias, cardNumber, cardDate, cvv, purchaseName;
-    let fixture = true;
+  beforeEach(() => {
+    cy.viewport(1280, 720); // Largura de 1280px e altura de 720p
+    Cypress.on('uncaught:exception', (err, runnable) => false);
+  });
+  
+  
+  it('Carregando Dados', function () {
+      if (cadastro) {
+        cy.log('Cadastra dados no json');
+        const dadosCadastro = {
+          nome: nome,
+          nomeCompra: nomeCompra,
+          email: email,
+          telefone: telefone,
+          cpf: cpf,
+          senha: senha,
+          dataNascimento: dataNascimento,
+          cep: cep,
+          numero: numero,
+          complemento: complemento,
+          referencia: referencia,
+          apelido: apelido,
+          cardNumber: cardNumber,
+          cardDate: cardDate,
+          cvv: cvv
+        };
+        cy.salvarDadosCadastro(dadosCadastro,fixtureFile);
+      }
+      cy.log('nome: ', nome);
+      cy.log('email: ', email);
+      cy.log('telefone: ', telefone);
+      cy.log('cpf: ', cpf);
+      cy.log('senhaAtual: ', senhaAtual);
+      cy.log('Data de Nascimento: ', dataNascimento);
+      cy.log('cep: ', cep);
+      cy.log('numero: ', numero);
+      cy.log('complemento: ', complemento);
+      cy.log('referencia: ', referencia);
+      cy.log('apelido: ', apelido);
+      cy.log('numero:', cardNumber, 'dataCartão:', cardDate, 'cvv', cvv);
+    });
 
-    before(() => {
-        if (fixture) {
-            cy.fixture('dadosCadastro').then((data) => {
-                if (Array.isArray(data) && data.length > 0) {
-                    const lastRegistration = data[0];
-                    name = lastRegistration.nome;
-                    email = lastRegistration.email;
-                    purchaseName = lastRegistration.nomeCompra;
-                    phone = lastRegistration.telefone;
-                    cpf = lastRegistration.cpf;
-                    currentPassword = lastRegistration.senha;
-                    birthDate = lastRegistration.dataNascimento;
-                    zipCode = lastRegistration.cep;
-                    addressNumber = lastRegistration.numero;
-                    complement = lastRegistration.complemento;
-                    reference = lastRegistration.referencia;
-                    alias = lastRegistration.apelido;
-                    cardNumber = lastRegistration.cardNumber;
-                    cardDate = lastRegistration.cardDate;
-                    cvv = lastRegistration.cvv;
-                } else {
-                    cy.log('No data found in fixture file.');
-                }
+
+    context('Testes de Cupom de primeira compra', () => {
+      it('Cupom primeira compra', function () {
+        if (!cadastro) {
+          cy.visit(URL_BASE);
+          cy.clicarEmLogin();
+          cy.fazerLogin(email, senhaAtual);
+          cy.pesquisarProduto('kaiak');
+          cy.comprarBusca();
+          cy.irCheckout();
+          cy.document().should((doc) => {
+            expect(doc.readyState).to.equal('complete');
+          });
+          cy.get('.checkout-order-resume-product-list > :nth-child(1)').should('be.visible')
+
+          cy.get('.checkout-order-resume-information > :nth-child(4) > :nth-child(2)')
+            .last()
+            .invoke('text')
+            .then((valorTotal) => {
+              const valorLimpo = valorTotal.replace('R$ ', '').replace(',', '.');
+              const valorTotalOriginal = parseFloat(valorLimpo);
+              cy.get('.accordion-button.checkout').click();
+              cy.get('#input-coupon').should('be.visible').type('PRIMEIRACOMPRA');
+              cy.contains('Aplicar Cupom').click();
+              cy.contains('Cupom aplicado!').should('exist');
+              cy.wait(2000);
+              cy.get('.checkout-order-resume-information > :nth-child(4) > :nth-child(2)')
+                .last()
+                .invoke('text')
+                .then((valorDesconto) => {
+                  const valorLimpoDesconto = valorDesconto.replace('R$ ', '').replace(',', '.');
+                  const valorTotalComDesconto = parseFloat(valorLimpoDesconto);
+                  expect(valorTotalComDesconto).to.be.lessThan(valorTotalOriginal);
+                  cy.pagPix();
+                  cy.checkout();
+                });
             });
         } else {
-            cy.log('Creating new registration');
-            cy.faker().then((faker) => {
-                cy.generateRandomNumber(3).then((randomNumber) => {
-                    cy.generateRandomName().then((generatedName) => {
-                        cy.generateRandomPassword().then((generatedPassword) => {
-                            cy.generateDate().then((generatedDate) => {
-                                name = `gabriel ${generatedName}`;
-                                purchaseName = `gabriel ${generatedName}`;
-                                email = `gabriel${generatedName}@example.com`;
-                                phone = `999${randomNumber}${randomNumber}00`;
-                                cpf = faker.br.cpf();
-                                password = generatedPassword;
-                                currentPassword = password;
-                                birthDate = generatedDate;
-                                zipCode = `99010-090`;
-                                addressNumber = `${randomNumber * 200 + 100}`;
-                                complement = `${randomNumber}`;
-                                reference = `House ${randomNumber}`;
-                                alias = `testAlias${randomNumber}`;
-                                cardNumber = "5448280000000007";
-                                cardDate = "0130";
-                                cvv = "123";
-                            });
-                        });
-                    });
-                });
-            });
+          this.skip();
+          cy.log("não é o primeiro Cadastro");
+          return
         }
-    });
+      });
+    
+  
+      });
 
-    beforeEach(() => {
-        cy.viewport(1280, 720);
-        Cypress.on('uncaught:exception', (err, runnable) => {
-            return false;
-        });
-    });
-
-    it('Load Data', () => {
-        if (!fixture) {
-            cy.log('Save registration data to JSON');
-            const registrationData = {
-                nome: name,
-                nomeCompra: purchaseName,
-                email: email,
-                telefone: phone,
-                cpf: cpf,
-                senha: password,
-                dataNascimento: birthDate,
-                cep: zipCode,
-                numero: addressNumber,
-                complemento: complement,
-                referencia: reference,
-                apelido: alias,
-                cardNumber: cardNumber,
-                cardDate: cardDate,
-                cvv: cvv
-            };
-            cy.saveRegistrationData(registrationData);
-        }
-        cy.log('name: ', name);
-        cy.log('email: ', email);
-        cy.log('phone: ', phone);
-        cy.log('cpf: ', cpf);
-        cy.log('currentPassword: ', currentPassword);
-        cy.log('Birth Date: ', birthDate);
-        cy.log('zipCode: ', zipCode);
-        cy.log('addressNumber: ', addressNumber);
-        cy.log('complement: ', complement);
-        cy.log('reference: ', reference);
-        cy.log('alias: ', alias);
-        cy.log('cardNumber:', cardNumber, 'cardDate:', cardDate, 'cvv', cvv);
-    });
-
-    context('Registration, Login, and Logout Tests', () => {
-        it('Login with valid data', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-        });
-
-        it('Direct Logout', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.directLogout();
-            cy.wait(3000);
-        });
-
-        it('Profile Logout', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.profileLogout();
-            cy.wait(3000);
-        });
-    });
-
-    context('Data Editing Tests', () => {
-        it('Edit Registered Address', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.clickOnMyProfile();
-            cy.contains('Meus endereços').click();
-            cy.get('.card-address-container').should('be.visible').first().click();
-            cy.contains('Editar endereço').should('exist');
-            
-            cy.generateRandomNumber(3).then((randomNumber) => {
-                cy.generateRandomName().then((newGeneratedName) => {
-                    let newZipCode = `99010-090`; 
-                    let newAddressNumber = `${randomNumber * 55}`;
-                    let newComplement = `${randomNumber}`;
-                    let newReference = `House ${randomNumber}`;
-                    let newAlias = `testAlias${randomNumber}`;
-                    let newPurchaseName = `gabriel ${newGeneratedName}`;
-                    let newPhone = `999${randomNumber}${randomNumber}00`;
-
-                    cy.editAddress(newZipCode, newAddressNumber, newComplement, newReference, newAlias, newPurchaseName, newPhone);
-
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'cep', newZipCode);
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'numero', newAddressNumber);
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'complemento', newComplement);
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'referencia', newReference);
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'apelido', newAlias);
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'nomeCompra', newPurchaseName);
-                    cy.updateFirstFixtureObjectKey('dadosCadastro', 'telefone', newPhone);
-
-                    zipCode = newZipCode;
-                    addressNumber = newAddressNumber;
-                    complement = newComplement;
-                    reference = newReference;
-                    alias = newAlias;
-                    purchaseName = newPurchaseName;
-                    phone = newPhone;
-                });
-            });
-        });
-
-        it('Change Password', () => {
-            cy.updateFirstFixtureObjectKey('dadosCadastro', 'bkpSenha', currentPassword);
-
-            cy.generateRandomPassword().then((newPassword) => {
-                cy.visit('/');
-                cy.clickOnLogin();
-                cy.login(email, currentPassword);
-                cy.clickOnMyProfile();
-                cy.contains('Mudar senha').click();
-                cy.get('#password').type(currentPassword);
-                cy.get('#newPassword').type(newPassword);
-                cy.get('#confirmPassword').type(newPassword);
-                cy.contains('Salvar alterações').should('be.enabled').click();
-                cy.updateFirstFixtureObjectKey('dadosCadastro', 'senha', newPassword);
-
-                currentPassword = newPassword;
-            });
-            cy.contains('Faça seu login').should('be.visible');
-        });
-
-        it('Edit Personal Data', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.clickOnMyProfile();
-            cy.generateRandomNumber(3).then((randomNumber) => {
-                cy.generateRandomName().then((generatedName) => {
-                    cy.generateDate().then((generatedDate) => {
-                        let editedName = `gabriel ${generatedName}`;
-                        let editedDate = generatedDate;
-                        let editedPhone = `999${randomNumber}${randomNumber}00`;
-
-                        cy.editPersonalData(editedName, editedDate, editedPhone);
-
-                        cy.updateFirstFixtureObjectKey('dadosCadastro', 'nome', editedName);
-                        cy.updateFirstFixtureObjectKey('dadosCadastro', 'dataNascimento', editedDate);
-                        cy.updateFirstFixtureObjectKey('dadosCadastro', 'telefone', editedPhone);
-
-                        name = editedName;
-                        birthDate = editedDate;
-                        phone = editedPhone;
-                    });
-                });
-            });
-        });
-    });
-
-    context('Payment Tests', () => {
-        it('Purchase via Card PDP', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.perfumery();
-            cy.selectFirstProduct();
-            cy.addProduct();
-            cy.goToCheckout();
-            cy.payWithCard(cardNumber, cardDate, cvv, name, cpf, 2);
-            cy.completeCheckout();
-        });
-
-        it('Purchase via Boleto PDP', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.perfumery();
-            cy.selectFirstProduct();
-            cy.addProduct();
-            cy.goToCheckout();
-            cy.payWithBoleto();
-            cy.completeCheckout();
-        });
-
-        it('Purchase via Pix PDP', () => {
-            cy.visit('/');
-            cy.clickOnLogin();
-            cy.login(email, currentPassword);
-            cy.perfumery();
-            cy.selectFirstProduct();
-            cy.addProduct();
-            cy.goToCheckout();
-            cy.payWithPix();
-            cy.completeCheckout();
-        });
-    });
-
-    context('Sorting Tests', () => {
-        it('Sorting A-Z', () => {
-            cy.visit('/');
-            cy.bodyAndBath();
-            cy.sortAZ();
-        });
-
-        it('Sorting Z-A', () => {
-            cy.visit('/');
-            cy.bodyAndBath();
-            cy.sortZA();
-        });
-
-        it('Sorting 1-2', () => {
-            cy.visit('/');
-            cy.bodyAndBath();
-            cy.sort12();
-        });
-
-        it('Sorting 2-1', () => {
-            cy.visit('/');
-            cy.bodyAndBath();
-            cy.sort21();
-        });
-    });
-});
+  })
