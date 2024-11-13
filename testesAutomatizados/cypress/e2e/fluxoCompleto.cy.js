@@ -73,7 +73,7 @@ describe('Fluxo Completo', () => {
     });
     
     
-    it.only('Carregando Dados', function () {
+    it('Carregando Dados', function () {
         if (cadastro) {
           cy.log('Cadastra dados no json');
           const dadosCadastro = {

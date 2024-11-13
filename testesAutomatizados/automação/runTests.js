@@ -2,8 +2,8 @@ const { exec } = require('child_process');
 
 const commands = [
   { command: 'npx cypress run --spec "cypress/e2e/fluxoCompleto.cy.js"', name: 'Executar Cypress' },
-  { command: 'node automação/convertToPDF.js', name: 'Converter para PDF' }, // caminho atualizado
-  { command: 'node automação/sendReport.js', name: 'Enviar Relatório' } // caminho atualizado
+  { command: 'node automação/convertToPDF.js', name: 'Converter para PDF' },
+  { command: 'node automação/sendReport.js', name: 'Enviar Relatório' }
 ];
 
 const executeCommand = (command, name) => {
@@ -12,7 +12,6 @@ const executeCommand = (command, name) => {
 
     console.log(`Executando: ${name}...`);
 
-    // Capturar e exibir saída do comando em tempo real
     process.stdout.on('data', (data) => {
       console.log(`${name} output: ${data}`);
     });
@@ -27,12 +26,11 @@ const executeCommand = (command, name) => {
       } else {
         console.error(`${name} falhou com código ${code}`);
       }
-      resolve(); // Resolve a promessa quando o processo termina
+      resolve();
     });
   });
 };
 
-// Função principal para executar os comandos sequencialmente
 const runCommands = async () => {
   for (const { command, name } of commands) {
     await executeCommand(command, name);
@@ -40,5 +38,4 @@ const runCommands = async () => {
   console.log('Todos os comandos foram executados.');
 };
 
-// Iniciar a execução dos comandos
 runCommands();

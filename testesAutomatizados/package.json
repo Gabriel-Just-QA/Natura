@@ -4,7 +4,7 @@
   "description": "Testes PRD",
   "main": "cypress.config.js",
   "scripts": {
-    "test": "cypress run --spec 'cypress/e2e/TESSSSSTEEE.cy.js'",
+    "test": "",
     "generate-report": "node automação/runTests.js",
     "convert-to-pdf": "node automação/convertToPDF.js"
   },

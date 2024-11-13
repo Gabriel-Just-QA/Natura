@@ -1,0 +1,7 @@
+node_modules
+cypress/fixtures/cadastroPRD.json
+cypress/fixtures/cadastroHML.json
+cypress/e2e/bkp1.cy.js
+cypress/e2e/bkp2.cy.js
+cypress/reports/html/*
+cypress/reports/pdf/*
