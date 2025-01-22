@@ -26,7 +26,7 @@ Cypress.Commands.add('primeiroProduto', () => {
 
 
   Cypress.Commands.add('comprarBusca', () => {
-    cy.get('.header-desktop-search-result .product-card-miniature').eq(0).find('button.action-button.primary').click();
+    cy.get('.header-desktop-search-result .product-card-miniature').eq(0).find('button.action-button.primary').click({force: true});
     cy.get('.Toastify__toast-body').should('be.visible')
     cy.contains('Ver minha sacola').click({force: true})
     cy.get('h1.checkout-title').contains('Sacola').should('be.visible')

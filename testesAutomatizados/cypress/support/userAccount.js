@@ -17,23 +17,24 @@ Cypress.Commands.add('fazerLogin', ( email, senha) => {
   cy.get('input[placeholder="Digite sua senha"]').type(senha)
   cy.contains('button', 'Entrar').click();
 
-  cy.contains('Ver meu perfil', {timeout: 60000}).should('exist')
+  // cy.contains('Ver meu perfil', {timeout: 60000}).should('exist')
+  cy.get('button.ActionsMenuListButton',{timeout: 60000}).should('have.class', 'active');
 
   cy.log("Login Feito com sucesso")
   });
 
 
   Cypress.Commands.add('logoutDireto', () => {
-
-    cy.contains('Sair').click({ force: true });
-    cy.contains('Ver meu perfil').should('not.exist')
+cy.get('#gtmActionsMenuList > div > div > div.jsx-1681f388cd853621.modal-login-status-content > div.jsx-1681f388cd853621.modal-login-status-profile-btn').click({ force: true });
+    // cy.contains('Sair').click({ force: true });
+    cy.get('button.ActionsMenuListButton').should('not.have.class', 'active');
   });
 
 Cypress.Commands.add('logoutDoPerfil', () => {
 
     cy.clicarEmMeuPerfil()
     cy.contains('#gtmSidemenu-list-item-text', 'Sair').click();
-    cy.get('.profile-data-title').should('not.exist')
+    cy.get('button.ActionsMenuListButton').should('not.have.class', 'active');
   });
 
 

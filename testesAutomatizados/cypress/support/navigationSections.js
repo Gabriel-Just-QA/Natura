@@ -1,18 +1,21 @@
 Cypress.Commands.add('clicarEmLogin', () => {
-
-  cy.contains('Perfil').trigger('mouseover');
-  cy.contains('button', 'Fazer login').click({ force: true });
+  cy.get('div.modal-login-status-buttons > button.btn_container.container__contained')
+  .contains('fazer login').click({ force: true })
 });
 
 Cypress.Commands.add('clicarEmMeuPerfil', () => {
+  cy.get('.modal-login-status-profile-btn')
+  .contains('ver meu perfil')
+  .click({ force: true });
 
-  cy.contains('Ver meu perfil').click({ force: true });
 });
 
 Cypress.Commands.add('clicarEmCadastro', () => {
+  cy.get('div.modal-login-status-buttons > button.btn_container.container__outlined')
+  .contains('cadastrar')
+.click({ force: true })
+  cy.contains('cadastrar');
 
-  cy.contains('Perfil').trigger('mouseover');
-  cy.contains('button', 'Cadastrar').click({ force: true });
 });
 
 

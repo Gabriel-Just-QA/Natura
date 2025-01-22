@@ -3,12 +3,13 @@ describe('Fluxo Completo', () => {
     let senhaAtual, nome, email, telefone, cpf, senha, bkpSenha , dataNascimento, cep, numero, complemento, referencia, apelido, cardNumber, cardDate, cvv, nomeCompra;
   
     // Se usa os dados de uma conta já criada ou cria uma nova conta, faz o fluxo inteiro com cadastro (true ou false)
-    let cadastro = true;
+    let cadastro = false;
   
     // Escolha do ambiente: True para Produção, False para HML
     const ambiente = false;
-
-    const URL_BASE = ambiente ? 'https://social.prd.naturacloud.com/?consultoria=camilagarciapulido' : 'https://sales-mgmt-cb-mfe-composer-akamai.hml.naturacloud.com/?consultoria=consultorahmlteste';
+    // https://social.prd.naturacloud.com/?consultoria=camilagarciapulido
+    
+    const URL_BASE = ambiente ? '    https://sales-mgmt-cb-mfe-composer-akamai.prd.naturacloud.com/?consultoria=camilagarciapulido' : 'https://sales-mgmt-cb-mfe-composer-akamai.hml.naturacloud.com/?consultoria=camilagarciapulido';
     const fixtureFile = ambiente ? 'cadastroPRD' : 'cadastroHML';
   
     before(() => {
@@ -45,7 +46,7 @@ describe('Fluxo Completo', () => {
                 cy.generateDate().then((dataGerada) => {
                   nome = 'gabriel ' + nomeGerado;
                   nomeCompra = 'gabriel ' + nomeGerado;
-                  email = 'gabriel' + nomeGerado + '@tuamaeaquelaursa.com';
+                  email = 'regressivo' + nomeGerado + '@gmail.com';
                   telefone = `999${numeroAleatorio}${numeroAleatorio}00`;
                   cpf = faker.br.cpf();
                   senha = senhaGerada;

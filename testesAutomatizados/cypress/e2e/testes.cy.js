@@ -113,7 +113,43 @@ describe('Testes individuais', () => {
 /// Coloque aqui os testes que vc deseja testar separadamente:
 
 
-
+it('Cupom primeira compra', function () {
+  if (!cadastro){
+    cy.visit(URL_BASE);
+    cy.clicarEmLogin();
+    cy.fazerLogin(email, senhaAtual);
+    cy.pesquisarProduto('kaiak');
+    cy.comprarBusca();
+    cy.irCheckout();
+    cy.get('.checkout-order-resume-product-list > :nth-child(1)').should('be.visible')
+    cy.get('.checkout-order-resume-information > :nth-child(4) > :nth-child(2)')
+      .last()
+      .invoke('text')
+      .then((valorTotal) => {
+        const valorLimpo = valorTotal.replace('R$ ', '').replace(',', '.');
+        const valorTotalOriginal = parseFloat(valorLimpo);
+        cy.get('.accordion-button.checkout').click();
+        cy.get('#input-coupon').should('be.visible').type('PRIMEIRACOMPRA');
+        cy.contains('Aplicar Cupom').click();
+        cy.contains('Cupom aplicado!').should('exist');
+        cy.wait(2000);
+        cy.get('.checkout-order-resume-information > :nth-child(4) > :nth-child(2)')
+          .last()
+          .invoke('text')
+          .then((valorDesconto) => {
+            const valorLimpoDesconto = valorDesconto.replace('R$ ', '').replace(',', '.');
+            const valorTotalComDesconto = parseFloat(valorLimpoDesconto);
+            expect(valorTotalComDesconto).to.be.lessThan(valorTotalOriginal);
+            cy.pagPix();
+            cy.checkout();
+          });
+      });
+  } else {
+    this.skip();
+    cy.log("não é o primeiro Cadastro");
+    return
+  }
+});
 
     
 
